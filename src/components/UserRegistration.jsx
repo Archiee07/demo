@@ -2,9 +2,8 @@ import React, { Component } from 'react'
 import BackendService from '../services/BackendService';
 import {
   MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage, MDBInput, MDBIcon, MDBCheckbox
-}
-  from 'mdb-react-ui-kit';
-import { Alert } from 'bootstrap';
+}from 'mdb-react-ui-kit';
+
 
 class UserRegistration extends Component {
   constructor(props) {
@@ -20,10 +19,8 @@ class UserRegistration extends Component {
       FormInput_password: '',
       FormInput_repeat_password: '',
       FormInput_subs_Newsletter: 'false',
-      FormInput_IsVerified: 'false',
-      FormInput_VerificationCode: '',
-      FormInput_IsActive: 'false',
-      FormInput_ModifiedBy: ''
+      FormInput_ModifiedBy: '',
+      IsUserExists: false
     }
   }
 
@@ -61,13 +58,12 @@ class UserRegistration extends Component {
       MobileNo: this.state.FormInput_mobileNo,
       Password: this.state.FormInput_password,
       Subs_Newsletter: this.state.FormInput_subs_Newsletter,
-      IsVerified: this.state.FormInput_IsVerified,
-      VerificationCode: this.state.FormInput_VerificationCode,
-      IsActive: this.state.FormInput_IsActive,
-      ModifiedBy: this.state.FormInput_ModifiedBy
+      VerificationCode: ''
+
+
     };
     // write to console to checj if object is correcly formated and have all required fields
-    console.log('User => ' + JSON.stringify(UserObj));
+   // console.log('User => ' + JSON.stringify(UserObj));
 
     // validation the mandatory input fields
     if (UserObj.Name.length < 5) {
@@ -78,11 +74,7 @@ class UserRegistration extends Component {
       alert('Invalid Form, enter a valid email address')
       return
     }
-    if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(UserObj.EmailID)) {
-      alert('Invalid Form, enter a valid email address')
-      return
-    }
-
+  
     if (UserObj.MobileNo.length != 9) {
       alert('Invalid Form, enter valid mobile number of 9 digit')
       return
@@ -95,32 +87,50 @@ class UserRegistration extends Component {
       alert('Invalid Form, repeat password does not match with password');
       return
     }
+    let parmObj = {
+      parmName: 'EmailID',
+      paramValue: this.state.FormInput_emailId,
 
+    };
+    // email existence validation
+    BackendService.GetUserdataByParameter(JSON.stringify(parmObj)).then(res => {
 
+      if (res.data.emailID != null || res.data.emailID!= undefined) {
+        alert('Entered email ID already exists');
+        return
+      }
+      else {
+        
+        BackendService.createUser(JSON.stringify(UserObj)).then(res => {
 
-    // call api
-    BackendService.createUser(JSON.stringify(UserObj)).then(res => {
+          alert('Your registration is successful');
+    
+          // after form submitted to server, clear all valued from from.
+          this.state = {
+            FormInput_name: '',
+            FormInput_emailId: '',
+            FormInput_mobileNo: '',
+            FormInput_password: '',
+            FormInput_repeat_password: '',
+            FormInput_subs_Newsletter: 'false',
+            FormInput_IsVerified: 'false',
+            FormInput_VerificationCode: '',
+            FormInput_IsActive: 'false',
+            FormInput_ModifiedBy: ''
+          };
+    
+          // Reload the form to refrsh it
+          window.location.reload(true);
+    
+        });
 
-      alert('Your registration is successful');
+      }
 
-      // after form submitted to server, clear all valued from from.
-      this.state = {
-        FormInput_name: '',
-        FormInput_emailId: '',
-        FormInput_mobileNo: '',
-        FormInput_password: '',
-        FormInput_repeat_password: '',
-        FormInput_subs_Newsletter: 'false',
-        FormInput_IsVerified: 'false',
-        FormInput_VerificationCode: '',
-        FormInput_IsActive: 'false',
-        FormInput_ModifiedBy: ''
-      };
-
-      // Reload the form to refrsh it
-      window.location.reload(true);
 
     });
+
+    // call api
+  
 
 
   }

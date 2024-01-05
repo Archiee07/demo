@@ -1,29 +1,24 @@
 import React, { Component } from 'react'
 import { Routes, Route, useNavigate } from 'react-router-dom';
+import { variables } from './Variables.jsx';
 import { bake_cookie, read_cookie, delete_cookie } from 'sfcookies';
 import {
-    MDBContainer, MDBRow, MDBTable, MDBTableHead, MDBCard, MDBCardBody, MDBTableBody, MDBBtn, MDBModal, MDBIcon, MDBCol, MDBInput, MDBCheckbox,
-    MDBModalDialog, MDBModalContent, MDBModalHeader, MDBModalTitle, MDBModalBody, MDBModalFooter, MDBCardImage, MDBCardText
-}
-    from 'mdb-react-ui-kit';
+         MDBContainer, MDBRow, MDBCard, MDBCardBody, MDBBtn,  MDBCol
+       }from 'mdb-react-ui-kit';
 
 function Logout() {
 
     const navigate = useNavigate();
-    const key_IsUserLoggedIn = 'IsLoggedId';
-    const key_userRole = 'userRole';
-    const key_userName = 'userName';
-
-
 
     function btnUserLogout(e) {
         e.preventDefault();
 
         // setting up cookies
-        delete_cookie(key_IsUserLoggedIn);
-        delete_cookie(key_userRole);
-        delete_cookie(key_userName);
-        bake_cookie(key_IsUserLoggedIn, 'false');
+        delete_cookie(variables.key_IsUserLoggedIn);
+        delete_cookie(variables.key_userRole);
+        delete_cookie(variables.key_userName);
+        delete_cookie(variables.key_userId);
+        bake_cookie(variables.key_IsUserLoggedIn, 'false');
         navigate('/');
         window.location.reload(true);
 
@@ -31,13 +26,13 @@ function Logout() {
     return (
         <>
         <MDBContainer class="d-flex justify-content-center">
-          <MDBCard className='w-50'>
+          <MDBCard className='w-100'>
             <MDBCardBody>
               <MDBRow>
                 <MDBCol className='order-2 order-lg-1 d-flex flex-column align-items-center'>
-                <h4 className="fw-normal mb-5" style={{ color: '#4835d4' }}>You have been logged out successfully!</h4>
-                <h2 className="fw-normal mb-5" style={{ color: '#4835d4' }}>Thank you</h2>
-                  <MDBBtn gradient="young-passion" size="sm" onClick={btnUserLogout}>Close to Disconnect Session</MDBBtn>
+                <h4 className="fw-normal mb-5" style={{ color: '#4835d4' }}>You are about to be logged out from this site!</h4>
+                <h2 className="fw-normal mb-5" style={{ color: '#4835d4' }}>Are you sure?</h2>
+                  <MDBBtn gradient="young-passion" size="lg" onClick={btnUserLogout}>Disconnect</MDBBtn>
   
                 </MDBCol>
               </MDBRow>

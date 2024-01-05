@@ -77,6 +77,31 @@ class BackendService {
         });
     }
 
+    GetUserdataByParameter(Parameter) {
+        return axios({
+            method: 'post',
+            headers: { 'Content-Type': 'application/json' },
+            url: API_BASE_URL + '/User/getUserByParam',
+            data:Parameter
+        }).catch((error) => {
+
+            this.handleErrors(error);
+
+        });
+    }
+
+    GetAllProduct() {
+        const headers = {
+            'Content-Type': 'application/json'
+        };
+        return axios.get(API_BASE_URL + '/Product/GetAll', headers)
+            .catch((error) => {
+                this.handleErrors(error);
+
+            });
+    }
+
+
 }
 
 export default new BackendService()

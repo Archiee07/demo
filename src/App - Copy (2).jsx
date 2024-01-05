@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import React, { useEffect } from 'react';
 import './App.css';
-import { HashRouter as Router, Route, Routes, NavLink } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Routes, NavLink } from 'react-router-dom'
 import FooterComponent from './components/FooterComponent';
 import UserRegistration from './components/UserRegistration';
 import Product from './components/Product';
@@ -62,26 +62,26 @@ else console.log('Cart Intems at page load:' + sessionStorage.getItem("cartItems
             <MDBCollapse show={showNavColor} navbar>
               <MDBNavbarNav left >
                 <MDBNavbarItem>
-                  <MDBNavbarLink aria-current='page' href='#/'> </MDBNavbarLink>
+                  <MDBNavbarLink aria-current='page' href='/'> </MDBNavbarLink>
                 </MDBNavbarItem>
                 <MDBNavbarItem>
-                  <MDBNavbarLink aria-current='page' href='#/'> Home </MDBNavbarLink>
+                  <MDBNavbarLink aria-current='page' href='/'> Home </MDBNavbarLink>
                 </MDBNavbarItem>
                 {JSON.stringify(read_cookie(variables.key_userRole)) === JSON.stringify('admin') ?
                 <MDBNavbarItem>
-                  <MDBNavbarLink href='#/ProductsList'>Product</MDBNavbarLink>
+                  <MDBNavbarLink href='/ProductsList'>Product</MDBNavbarLink>
                 </MDBNavbarItem>
                 :
                 <MDBNavbarItem>
                 </MDBNavbarItem>
               }
                 <MDBNavbarItem>
-                  <MDBNavbarLink href='#/Menu'>Menu</MDBNavbarLink>
+                  <MDBNavbarLink href='/Menu'>Menu</MDBNavbarLink>
                 </MDBNavbarItem>
 
                 {JSON.stringify(read_cookie(variables.key_userRole)) === JSON.stringify('admin') ?
                   <MDBNavbarItem>
-                    <MDBNavbarLink href='#/OrderList'>Order</MDBNavbarLink>
+                    <MDBNavbarLink href='/OrderList'>Order</MDBNavbarLink>
                   </MDBNavbarItem>
                   :
                   <MDBNavbarItem>
@@ -90,7 +90,7 @@ else console.log('Cart Intems at page load:' + sessionStorage.getItem("cartItems
 
                 {JSON.stringify(read_cookie(variables.key_userRole)) === JSON.stringify('admin') ?
                   <MDBNavbarItem>
-                    <MDBNavbarLink href='#/ListUser'>Customer</MDBNavbarLink>
+                    <MDBNavbarLink href='/ListUser'>Customer</MDBNavbarLink>
                   </MDBNavbarItem>
                   :
                   <MDBNavbarItem>
@@ -99,7 +99,7 @@ else console.log('Cart Intems at page load:' + sessionStorage.getItem("cartItems
               </MDBNavbarNav>
               <MDBNavbarNav className='justify-content-end'>
                 <MDBNavbarItem>
-                  <MDBNavbarLink className="waves-effect waves-light" to="#!" href='#/Cart'>
+                  <MDBNavbarLink className="waves-effect waves-light" to="#!" href='/Cart'>
                   {CartItems.length}
                     <MDBIcon icon="cis-fas fa-cart-shopping" />
                   </MDBNavbarLink>
@@ -111,7 +111,7 @@ else console.log('Cart Intems at page load:' + sessionStorage.getItem("cartItems
                   </MDBNavbarItem>
                   :
                   <MDBNavbarItem>
-                    <MDBNavbarLink href='#/UserRegistration'>
+                    <MDBNavbarLink href='/UserRegistration'>
                       <MDBIcon far icon="sign-up" />Sign Up
                     </MDBNavbarLink>
                   </MDBNavbarItem>
@@ -119,7 +119,7 @@ else console.log('Cart Intems at page load:' + sessionStorage.getItem("cartItems
 
                 {JSON.stringify(read_cookie(variables.key_IsUserLoggedIn)) === JSON.stringify('true') ?
                   <MDBNavbarItem>
-                    <MDBNavbarLink className="waves-effect waves-light" href='#/ProfileViewPage'>
+                    <MDBNavbarLink className="waves-effect waves-light" href='/ProfileViewPage'>
                       {read_cookie(variables.key_userName)}
                       <img  src={variables.PHOTO_URL +  read_cookie(variables.key_imageName) }
                         className="rounded-circle" height="22" alt="Avatar" loading="lazy" />
@@ -127,14 +127,14 @@ else console.log('Cart Intems at page load:' + sessionStorage.getItem("cartItems
                   </MDBNavbarItem>
                   :
                   <MDBNavbarItem>
-                    <MDBNavbarLink className="waves-effect waves-light" href='#/Login'>
+                    <MDBNavbarLink className="waves-effect waves-light" href='/Login'>
                       <MDBIcon far icon="user" />Login
                     </MDBNavbarLink>
                   </MDBNavbarItem>
                 }
                   {JSON.stringify(read_cookie(variables.key_IsUserLoggedIn)) === JSON.stringify('true') ?
                   <MDBNavbarItem>
-                    <MDBNavbarLink href='#/Logout'> 
+                    <MDBNavbarLink href='/Logout'> 
                     Logout</MDBNavbarLink>
                   </MDBNavbarItem>
                   :

@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
-import { useState } from 'react';
-import BackendService from '../services/BackendService'
+import { variables } from './Variables.jsx';
+import BackendService from '../services/BackendService';
+import ProBackendService from "../services/ProBackendService";
 import {
     MDBContainer, MDBRow, MDBTable, MDBTableHead, MDBCard, MDBCardBody, MDBTableBody, MDBBtn, MDBModal, MDBIcon, MDBCol, MDBInput, MDBCheckbox,
     MDBModalDialog, MDBModalContent, MDBModalHeader, MDBModalTitle, MDBModalBody, MDBModalFooter,MDBCardImage ,MDBCardText 
-}
-    from 'mdb-react-ui-kit';
+    }from 'mdb-react-ui-kit';
 
 class ListUser extends Component {
     constructor(props) {
@@ -14,7 +14,11 @@ class ListUser extends Component {
         // declare state variables
         this.state = {
             users: [],
-            id: '', name: '', emailID: '', mobileNo: '', modifiedBy: '', subs_Newsletter: false,IsVerified:false,IsActive:false,
+            orders: [],
+            orderItems: [],
+            CurrentUser: {id: '', name: '', emailID: '', mobileNo: '', modifiedBy: '', subs_Newsletter:false,verified:false,active:false },
+            id: '', name: '', emailID: '', mobileNo: '', modifiedBy: '', imageName:'',
+            subs_Newsletter:false,verified:false,active:false, 
             viewModal: false,
             editModal: false
         }
@@ -28,10 +32,22 @@ class ListUser extends Component {
 
     // page load function ********************************************************************
     componentDidMount() {
+
+
         BackendService.getAllUser().then((res) => {
             this.setState({ users: res.data });
            // console.log('user loaded:' + JSON.stringify(this.state.users))
         });
+
+         ProBackendService.getAllOrder().then(res => {
+                this.setState({ orders: res.data });
+        });
+    
+
+        ProBackendService.getOrderStatus().then(res => {
+                this.setState({ orderItems: res.data });
+            });
+        
 
     }
     // Delete user function **********************************************************************
@@ -51,13 +67,15 @@ class ListUser extends Component {
             name: Objuser.name,
             emailID: Objuser.emailID,
             mobileNo: Objuser.mobileNo,
+            imageName: Objuser.imageName,
             subs_Newsletter: Objuser.subs_Newsletter,
-            IsVerified: Objuser.IsVerified,
-            IsActive: Objuser.IsActive,
-            modifiedBy: Objuser.modifiedBy
+            verified: Objuser.verified,
+            active: Objuser.active,
+            modifiedBy: Objuser.modifiedBy,
         });
+        
         this.setState({ viewModal: !this.state.viewModal });
-        console.log(Objuser)
+     
     }
     veiw_toggleShow = () => this.setState({ viewModal: !this.state.viewModal });
 
@@ -69,10 +87,11 @@ class ListUser extends Component {
             name: Objuser.name,
             emailID: Objuser.emailID,
             mobileNo: Objuser.mobileNo,
-            subs_Newsletter: Objuser.subs_Newsletter.toLowerCase(),
+            subs_Newsletter: Objuser.subs_Newsletter,
             modifiedBy: ''
         })
-        console.log('you are editing user:' + JSON.stringify(this.state.mobileNo))
+        console.log('state object: ' + JSON.stringify(this.state.subs_Newsletter) )
+        console.log('Passed object: ' + JSON.stringify(Objuser.subs_Newsletter) )
         this.setState({ editModal: !this.state.editModal });
 
     }
@@ -98,7 +117,6 @@ class ListUser extends Component {
                 break;
             case "subs_Newsletter":
                 this.setState({ subs_Newsletter: e.target.checked.toString() });
-                console.log(this.state.subs_Newsletter);
                 break;
 
         }
@@ -113,7 +131,6 @@ class ListUser extends Component {
             EmailID: this.state.emailID,
             MobileNo: this.state.mobileNo,
             Subs_Newsletter: this.state.subs_Newsletter,
-            Verified: this.state.Isv,
             ModifiedBy: this.state.modifiedBy,
           };
           if (this.state.name.length < 5) {
@@ -147,10 +164,11 @@ class ListUser extends Component {
 
         return (<>
             <MDBContainer class="d-flex justify-content-center">
-                <MDBCard className='w-75' style={{ borderRadius: '25px' }}>
+                <MDBCard className='w-100' style={{ borderRadius: '25px' }}>
                     <MDBCardBody>
                         <MDBRow>
                             <caption> List of users </caption>
+                            <div class="table-responsive">
                             <MDBTable align='middle' class="table table-sm">
                                 <MDBTableHead>
                                     <tr>
@@ -158,6 +176,8 @@ class ListUser extends Component {
                                         <th> User Name</th>
                                         <th> User Mobile Number</th>
                                         <th> User Email Address</th>
+                                        <th> Verified</th>
+                                        <th> Status</th>
                                         <th> Actions</th>
                                     </tr>
                                 </MDBTableHead>
@@ -170,6 +190,8 @@ class ListUser extends Component {
                                                     <td> {users.name} </td>
                                                     <td> {users.mobileNo}</td>
                                                     <td> {users.emailID}</td>
+                                                    <td> {users.verified.toString() === 'true' ? 'Yes' : 'No'}</td>
+                                                    <td> {users.active.toString() === 'true' ? 'Active' : 'Inactive'}</td>
                                                     <td>
 
                                                         <MDBBtn color='link' rounded size='sm' onClick={() => this.viewUser(users)}  >
@@ -196,6 +218,7 @@ class ListUser extends Component {
                                     }
                                 </MDBTableBody>
                             </MDBTable>
+                            </div>
                         </MDBRow>
                     </MDBCardBody>
                 </MDBCard>
@@ -213,13 +236,13 @@ class ListUser extends Component {
                                         <MDBCard className="mb-4">
                                             <MDBCardBody className="text-center">
                                                 <MDBCardImage
-                                                    src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3.webp"
+                                                    src={variables.PHOTO_URL + this.state.imageName}
                                                     alt="avatar"
                                                     className="rounded-circle"
                                                     style={{ width: '150px' }}
                                                     fluid />
-                                                <p className="text-muted mb-1">1001</p>
-                                                <p className="text-muted mb-4">Archana Singh</p>
+                                                <p className="text-muted mb-1">{this.state.id}</p>
+                                                <p className="text-muted mb-4">{this.state.name}</p>
                                             </MDBCardBody>
                                         </MDBCard>
                                     </MDBCol>
@@ -249,7 +272,7 @@ class ListUser extends Component {
                                                         <MDBCardText>Verified</MDBCardText>
                                                     </MDBCol>
                                                     <MDBCol sm="9">
-                                                        <MDBCardText className="text-muted">{this.state.IsVerified}</MDBCardText>
+                                                        <MDBCardText className="text-muted">{this.state.verified? 'Yes' : 'No'}</MDBCardText>
                                                     </MDBCol>
                                                 </MDBRow>
                                                 <hr />
@@ -258,7 +281,7 @@ class ListUser extends Component {
                                                         <MDBCardText>News letter subscribed</MDBCardText>
                                                     </MDBCol>
                                                     <MDBCol sm="9">
-                                                        <MDBCardText className="text-muted">{this.state.subs_Newsletter}</MDBCardText>
+                                                        <MDBCardText className="text-muted">{this.state.subs_Newsletter? 'Yes' : 'No'}</MDBCardText>
                                                     </MDBCol>
                                                 </MDBRow>
                                                 <hr />
@@ -267,7 +290,7 @@ class ListUser extends Component {
                                                         <MDBCardText>Status</MDBCardText>
                                                     </MDBCol>
                                                     <MDBCol sm="9">
-                                                        <MDBCardText className="text-muted">{this.state.IsActive}</MDBCardText>
+                                                        <MDBCardText className="text-muted">{this.state.active? 'Active' : 'Inactive'}</MDBCardText>
                                                     </MDBCol>
                                                 </MDBRow>
                                             </MDBCardBody>
@@ -279,29 +302,41 @@ class ListUser extends Component {
                                     <MDBCol>
                                         <MDBCard className="mb-4">
                                             <MDBCardBody>
-                                                <MDBTable align='middle' class="table table-sm">
-                                                    <MDBTableHead>
-                                                        <tr>
-                                                            <th> User ID</th>
-                                                            <th> User Name</th>
-                                                            <th> User Mobile Number</th>
-                                                            <th> User Email Address</th>
-                                                        </tr>
-                                                    </MDBTableHead>
-                                                    <MDBTableBody>
-                                                        {
-                                                            this.state.users.map(
-                                                                users =>
-                                                                    <tr key={users.id} >
-                                                                        <td> {users.id} </td>
-                                                                        <td> {users.name} </td>
-                                                                        <td> {users.mobileNo}</td>
-                                                                        <td> {users.emailID}</td>
-                                                                    </tr>
-                                                            )
-                                                        }
-                                                    </MDBTableBody>
-                                                </MDBTable>
+                                            <MDBTable align='middle' class="table table-sm">
+                                            <MDBTableHead>
+                                                   <tr>
+                                                       <th> O. ID </th>
+                                                       <th>O. Value</th>
+                                                       <th>Dis. Value</th>
+                                                       <th>NP. Value</th>
+                                                       <th>O. Status</th>
+                                                       <th>Pay. Status</th>
+                                                       <th >Order Date </th>
+                                                       <th >Ex. Del. Date </th>
+                                                       <th >Customer Name </th>
+                                                       <th >Action </th>
+                                                   </tr>
+                                               </MDBTableHead>
+                                               <MDBTableBody>
+                                                   {
+                                                      this.state.orders.map(item =>
+                                                           item.uID === this.state.id ?
+                                                               <tr key={item.orderId} >
+                                                                   <td> {item.orderId} </td>
+                                                                   <td> {item.orderValue} </td>
+                                                                   <td> {item.discountValue}</td>
+                                                                   <td> {item.netPaidValue}</td>
+                                                                   <td>{item.statusName}</td>
+                                                                   <td> {item.paymentStatus.toString() === 'true' ? 'Done' : 'Pending'}</td>
+                                                                   <td> {item.orderDate.substring(0, 10)} </td>
+                                                                   <td> {item.expectedDeliveryDate.substring(0, 10)} </td>
+                                                                   <td> {item.uName} </td>
+                                                               </tr>
+                                                               : ''
+                                                       )
+                                                   }
+                                               </MDBTableBody>
+                                           </MDBTable>
                                             </MDBCardBody>
                                         </MDBCard>
                                     </MDBCol>

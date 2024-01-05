@@ -5,10 +5,11 @@ import BackendService from '../services/BackendService';
 import { useSelector, useDispatch } from "react-redux";
 import * as setLoggedUser from "../actions/LoggedInUser.jsx";
 import { bake_cookie, read_cookie, delete_cookie } from 'sfcookies';
-
+import { variables } from './Variables.jsx';
 import {
-  MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage, MDBInput, MDBIcon, MDBCheckbox
-} from 'mdb-react-ui-kit';
+         MDBBtn, MDBContainer, MDBRow, MDBCol, MDBCard, MDBCardBody, MDBCardImage, MDBInput, MDBIcon, MDBCheckbox
+        } from 'mdb-react-ui-kit';
+
 
 function Login() {
   const dispatch = useDispatch();
@@ -20,12 +21,7 @@ function Login() {
   const [userRole, setuserRole] = useState('');
   const [FormInput_emailId, setFormInput_emailId] = useState('');
   const [FormInput_password, setFormInput_password] = useState('');
-  const [FormInput_repeat_password, setFormInput_repeat_password] = useState('');
 
-
-  const key_IsUserLoggedIn = 'IsLoggedId';
-  const key_userRole = 'userRole';
-  const key_userName = 'userName';
 
   // Handle the onChnage event and set user intput to state variable
   function onChangeHandler(e) {
@@ -37,9 +33,7 @@ function Login() {
       case "Password":
         setFormInput_password(e.target.value);
         break;
-      case "repeatPassword":
-        setFormInput_repeat_password(e.target.value);
-        break;
+
     }
   }
 
@@ -61,29 +55,22 @@ function Login() {
       alert('Invalid Form, enter a password having minimum 8 and maximum 15 digit')
       return
     }
-    if (objLogin.Password != FormInput_repeat_password) {
-      alert('Invalid Form, repeat password does not match with password');
-      return
-    }
     // call api
     BackendService.UserLogin(JSON.stringify(objLogin)).then(res => {
 
-      if (res.data.id === null || res.data.id=== undefined) {
-        alert('Invalid login ID or Password');
-        alert('Server response: ' + JSON.stringify(res.data));
+      if (res.data.id===0 || res.data.id === null || res.data.id === undefined) {
+       alert('Invalid login ID or Password');
         return
 
       }
       else {
-        alert('Your login is successful');
-        alert('Server response: ' + JSON.stringify(res.data));
-
-        // Reload the form to refrsh it
 
         // setting up cookies
-        bake_cookie(key_IsUserLoggedIn, 'true');
-        bake_cookie(key_userRole, res.data.userRole);
-        bake_cookie(key_userName, res.data.name);
+        bake_cookie(variables.key_IsUserLoggedIn, 'true');
+        bake_cookie(variables.key_userRole, res.data.userRole);
+        bake_cookie(variables.key_userName, res.data.name);
+        bake_cookie(variables.key_userId, res.data.id);
+        bake_cookie(variables.key_imageName, res.data.imageName);
 
         // dispatching action to set logged user data to redux store
         dispatch(setLoggedUser.setIsUserLoggedIn('true'));
@@ -91,11 +78,11 @@ function Login() {
         dispatch(setLoggedUser.setUserId(res.data.id));
         dispatch(setLoggedUser.setUserName(res.data.Name));
         dispatch(setLoggedUser.setUserRole(res.data.userRole));
+        //alert('Login is successful');
         navigate('/');
       }
     });
   }
-
 
 
   return (
@@ -117,10 +104,7 @@ function Login() {
                   <MDBInput label='Your password' id='Password' type='password' onChange={onChangeHandler} />
                 </div>
 
-                <div className="d-flex flex-row align-items-center mb-4">
-                  <MDBIcon fas icon="lock me-3" size='lg' />
-                  <MDBInput label='Repeat your password' id='repeatPassword' type='password' onChange={onChangeHandler} />
-                </div>
+
 
                 <MDBBtn className='btn btn-primary btn-block mb-4' size='md' onClick={btnUserLogin}>Login</MDBBtn>
 
@@ -133,7 +117,6 @@ function Login() {
             </MDBRow>
           </MDBCardBody>
         </MDBCard>
-
       </MDBContainer>
     </>
   )
